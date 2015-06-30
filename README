@@ -1,0 +1,21 @@
+README
+ Created on: Jun 30, 2015
+     Author: lpzun
+     
+USAGE:
+	 
+	./fws -f <source.ttd> -n <initial threads> -s <spawn transitions> --reach-ts
+
+OPTIONS:
+            -h: print short help message and return to caller, ignoring rest of line (a switch)
+        --help: print long  help message and return to caller, ignoring rest of line (a switch)
+            -f: input file (if given, don't specify s,l,e), with no specified range and default value "X"
+            -n: number of threads at the initial state, with no specified range and default value "1"
+            -s: maximum times of spawn transitions fired, with no specified range and default value "0"
+            -i: the initial thread state, with no specified range and default value "0|0"
+    --adj-list: whether to print the adjacency list (a switch)
+    --cmd-line: whether to print the command line (a switch)
+    --reach-ts: whether to print all reachable thread states (a switch)
+  --unreach-ts: whether to print all unreachable thread states (a switch)
+   --statistic: whether to print the statistic information (a switch)
+         --all: whether to print all of the above (a switch)
