@@ -9,6 +9,7 @@
 #define STATE_HH_
 
 #include "heads.hh"
+#include "functions.hh"
 
 namespace sura {
 
@@ -182,6 +183,11 @@ inline Global_State::Global_State(const Thread_State& t) :
 	locals[t.local] = 1;
 }
 
+/**
+ * @brief constructor with thread state t and n
+ * @param t
+ * @param n
+ */
 inline Global_State::Global_State(const Thread_State& t, const size_p &n) :
 		share(t.share) {
 	locals[t.local] = n;
@@ -200,7 +206,7 @@ inline Global_State::Global_State(const Shared_State& share, const Locals& local
  * @brief call by <<
  * @param out
  * @param sep
- * @return
+ * @return ostream
  */
 inline ostream& Global_State::to_stream(ostream& out, const string& sep) const {
 	out << "<" << this->share << "|";
@@ -217,72 +223,54 @@ inline ostream& Global_State::to_stream(ostream& out, const string& sep) const {
  * @param g
  * @return
  */
-inline ostream& operator<<(ostream& out, const Global_State& g) {
-	return g.to_stream(out);
+inline ostream& operator<<(ostream& out, const Global_State& s) {
+	return s.to_stream(out);
 }
 
 /**
- *
+ * @brief overloading operator <
  * @param s1
  * @param s2
  * @return bool
+ * 		   true : if s1 < s2
+ * 		   false: otherwise
  */
 inline bool operator<(const Global_State& s1, const Global_State& s2) {
 	if (s1.share == s2.share) {
-		auto s1_iter = s1.locals.begin(), s1_end = s1.locals.end();
-		auto s2_iter = s2.locals.begin(), s2_end = s2.locals.end();
-		while (true) {
-			if (s1_iter == s1_end && s2_iter == s2_end) {
-				return 0;
-			} else if (s1_iter == s1_end) {
-				return -1;
-			} else if (s2_iter == s2_end) {
-				return 1;
-			} else if (s1_iter->first < s2_iter->first) {
-				return -1;
-			} else if (s1_iter->first > s2_iter->first) {
-				return 1;
-			} else if (s1_iter->first == s2_iter->first) {
-				if (s1_iter->second < s2_iter->second) {
-					return -1;
-				} else if (s1_iter->second < s2_iter->second) {
-					return 1;
-				}
-			}
-			s1_iter++, s2_iter++;
-		}
-		throw;
+		return COMPARE::compare_map(s1.locals, s2.locals) == -1;
 	} else {
 		return s1.share < s2.share;
 	}
 }
 
 /**
- *
+ * @brief overloading operator >
  * @param s1
  * @param s2
- * @return
+ * @return bool
+ * 		   true : if s1 > s2
+ * 		   false: otherwise
  */
 inline bool operator>(const Global_State& s1, const Global_State& s2) {
 	return s2 < s1;
 }
 
 /**
- * @brief overload comparator ==
+ * @brief overloading operator ==
  * @param s1
  * @param s2
  * @return bool
+ * 		   true : if s1 == s2
+ * 		   false: otherwise
  */
 inline bool operator==(const Global_State& s1, const Global_State& s2) {
 	if (s1.share == s2.share) {
 		if (s1.locals.size() == s2.locals.size()) {
-			auto s1_iter = s1.locals.begin();
-			auto s2_iter = s2.locals.begin();
-			while (s1_iter != s1.locals.end()) {
-				if ((s1_iter->first != s2_iter->first) || (s1_iter->second != s2_iter->second)) {
+			auto is1 = s1.locals.begin(), is2 = s2.locals.begin();
+			while (is1 != s1.locals.end()) {
+				if ((is1->first != is2->first) || (is1->second != is2->second))
 					return false;
-				}
-				s1_iter++, s2_iter++;
+				is1++, is2++;
 			}
 			return true;
 		}
@@ -291,10 +279,12 @@ inline bool operator==(const Global_State& s1, const Global_State& s2) {
 }
 
 /**
- *
+ * @brief overloading operator !=
  * @param s1
  * @param s2
  * @return bool
+ * 		   true : if s1 != s2
+ * 		   false: otherwise
  */
 inline bool operator!=(const Global_State& s1, const Global_State& s2) {
 	return !(s1 == s2);

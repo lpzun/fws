@@ -19,3 +19,9 @@ OPTIONS:
   --unreach-ts: whether to print all unreachable thread states (a switch)
    --statistic: whether to print the statistic information (a switch)
          --all: whether to print all of the above (a switch)
+         
+spawn transition: the semantic implemented in this tool as follows:
+	suppose that (s|l1, ..., ln) -> (s'|l'1, ..., l'n'), n' = n + 1 and there exist (s,l) +> (s',l') and i 
+	such that li = l, for all j < n', lj = l'j, and l'n' = l'.
+	
+	

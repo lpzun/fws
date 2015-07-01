@@ -40,6 +40,8 @@ using std::map;
 using std::queue;
 using std::multimap;
 
+using std::stoul;
+
 typedef const short cshort;
 typedef const int cint;
 typedef const long clong;

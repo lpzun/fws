@@ -43,7 +43,7 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p&
 			auto ifind = TTD.find(src);
 			if (ifind != TTD.end()) {
 				for (auto idst = ifind->second.begin(); idst != ifind->second.end(); idst++) {
-					bool is_spawn = Util::is_spawn_transition(src, *idst);
+					bool is_spawn = Util::is_spawn_transition(src, *idst); // if (src, dst) is a spawn transition
 					if (is_spawn) {
 						if (spw > 0) {
 							spw--;
@@ -54,7 +54,6 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p&
 					Global_State _tau(idst->share, this->update_counter(tau.locals, src.local, idst->local, is_spawn)); // successor of tau
 					if (R.insert(_tau).second) { // if _tau is haven't been reached before
 						W.push(_tau);
-//						cout << _tau << endl;
 					}
 				}
 			}
@@ -248,10 +247,12 @@ vector<string> Util::split(const string &s, const char& delim) {
  * @return
  */
 Thread_State Util::create_thread_state_from_str(const string& s_ts, const char& delim) {
-	auto vs_ts = split(s_ts, delim);
-	if (vs_ts.size() != 2)
+	auto vts = split(s_ts, delim);
+	if (vts.size() != 2)
 		throw CONTROL::Error("The format of thread state is wrong.");
-	return Thread_State(atol(vs_ts[0].c_str()), atol(vs_ts[1].c_str()));
+	const string &share = vts[0];
+	const string &local = vts[1];
+	return Thread_State(std::stoi(share), std::stoi(local));
 }
 
 /**
