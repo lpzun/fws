@@ -24,4 +24,27 @@ spawn transition: the semantic implemented in this tool as follows:
 	suppose that (s|l1, ..., ln) -> (s'|l'1, ..., l'n'), n' = n + 1 and there exist (s,l) +> (s',l') and i 
 	such that li = l, for all j < n', lj = l'j, and l'n' = l'.
 	
+	The spawn transition operations are implemented in the following Function:
+	
+	1. file fws.cc
+	void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p& s){
+		...
+	}
+	
+	Locals FWS::update_counter(const Locals &Z, const Local_State &dec, const Local_State &inc, const bool &is_spawn){
+		...
+	}
+	
+	/**
+	 * @brief determine if (src, dst) correpsonds to a spawn transition
+	 * @param src
+	 * @param dst
+	 * @param spawn_trans
+	 * @return bool
+	 * 			true : src +> dst
+	 * 			false: otherwise
+	 */
+	bool Util::is_spawn_transition(const Thread_State& src, const Thread_State& dst){
+		...
+	}
 	
