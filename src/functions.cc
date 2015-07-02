@@ -89,8 +89,8 @@ short compare(clong& x, clong& y) {
  * @param m2
  */
 short compare_map(const map<ushort, ushort>& m1, const map<ushort, ushort>& m2) {
-	map<ushort, ushort>::const_iterator s1_iter = m1.begin(), s1_end = m1.end();
-	map<ushort, ushort>::const_iterator s2_iter = m2.begin(), s2_end = m2.end();
+	auto s1_iter = m1.begin(), s1_end = m1.end();
+	auto s2_iter = m2.begin(), s2_end = m2.end();
 	while (true) {
 		if (s1_iter == s1_end && s2_iter == s2_end) {
 			return 0;
@@ -105,7 +105,7 @@ short compare_map(const map<ushort, ushort>& m1, const map<ushort, ushort>& m2) 
 		} else if (s1_iter->first == s2_iter->first) {
 			if (s1_iter->second < s2_iter->second) {
 				return -1;
-			} else if (s1_iter->second < s2_iter->second) {
+			} else if (s1_iter->second > s2_iter->second) {
 				return 1;
 			}
 		}
