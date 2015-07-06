@@ -13,7 +13,7 @@
 #include <string>
 #include <list>
 
-#include "functions.hh"
+#include "algs.hh"
 
 namespace sura {
 

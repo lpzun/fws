@@ -17,7 +17,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "functions.hh"
+#include "algs.hh"
 
 namespace sura {
 

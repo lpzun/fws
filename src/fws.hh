@@ -9,7 +9,6 @@
 #define FWS_HH_
 
 #include "state.hh"
-#include "functions.hh"
 #include "refs.hh"
 
 namespace sura {

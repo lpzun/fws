@@ -9,7 +9,7 @@
 #define STATE_HH_
 
 #include "heads.hh"
-#include "functions.hh"
+#include "algs.hh"
 
 namespace sura {
 
