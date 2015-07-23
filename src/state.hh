@@ -47,7 +47,7 @@ public:
 	ostream& to_stream(ostream& out = cout) const;
 };
 
-typedef map<Thread_State, list<Thread_State>> adjacency_list;
+typedef map<Thread_State, deque<Thread_State>> adjacency_list;
 
 /**
  * @brief default constructor

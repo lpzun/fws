@@ -40,7 +40,7 @@ public:
 	static vector<string> split(const string &s, const char& delim);
 	static Thread_State create_thread_state_from_str(const string& s_ts, const char& delim = '|');
 	static Global_State create_global_state_from_str(const string& s_gs, const char& delim = '|');
-	static void print_adj_list(const map<Thread_State, list<Thread_State> >& adjacency_list, ostream& out = cout);
+	static void print_adj_list(const adjacency_list& adj_list, ostream& out = cout);
 	static bool is_spawn_transition(const Thread_State& src, const Thread_State& dst);
 };
 

@@ -29,10 +29,11 @@ FWS::~FWS() {
  * @param n  : number of threads at the initial states
  * @param s  : maximum number of spawn transition could be fired
  */
-void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p& s) {
+void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n,
+		const size_p& s) {
 	auto spw = s; // local copy of maximum number of spawn transition could be fired
-	queue<Global_State, list<Global_State>> W; /// worklist
-	W.push(Global_State(init_ts, n)); /// start from the initial state with n threads
+	queue<Global_State, deque<Global_State>> W; /// worklist
+	W.emplace(init_ts, n); /// start from the initial state with n threads
 	set<Global_State> R; /// reachable global states
 	while (!W.empty()) {
 		Global_State tau = W.front();
@@ -42,32 +43,36 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p&
 			Thread_State src(shared, il->first);
 			auto ifind = TTD.find(src);
 			if (ifind != TTD.end()) {
-				for (auto idst = ifind->second.begin(); idst != ifind->second.end(); idst++) {
+				for (auto idst = ifind->second.begin();
+						idst != ifind->second.end(); idst++) {
 					bool is_spawn = Util::is_spawn_transition(src, *idst); // if (src, dst) is a spawn transition
 					if (is_spawn) {
 						if (spw > 0) {
 							spw--;
-						} else {
-							continue; // if the we already fire s spawn transitions, we can't spawn again and have to skip src +> dst;
+						} else { // if the we already fire s spawn transitions, then
+							continue; // we can't spawn again and have to skip src +> dst;
 						}
 					}
-					Global_State _tau(idst->share, this->update_counter(tau.locals, src.local, idst->local, is_spawn)); // successor of tau
-					if (R.insert(_tau).second) { // if _tau is haven't been reached before
-						W.push(_tau);
+					Global_State _tau(idst->share,
+							this->update_counter(tau.locals, src.local,
+									idst->local, is_spawn)); // successor of tau
+					if (R.emplace(_tau).second) { // if _tau is haven't been reached before
+						W.emplace(_tau);
 					}
 				}
 			}
 		}
 	}
 
-	cout << "Under Setting: " << n << " threads at initial state, " << s << " spawn transitions" << endl;
+	cout << "Under Setting: " << n << " threads at initial state, " << s
+			<< " spawn transitions" << endl;
 	auto reached = this->extract_reachable_TS(R); // extract all reachable thread states
 	if (OPT_PRT_STATISTIC)
 		this->statistic(reached);
 	if (OPT_PRT_REACH_TS)
-		this->print_reachable_TS(reached);        // print out all reachable thread states
+		this->print_reachable_TS(reached); // print out all reachable thread states
 	if (OPT_PRT_UNREACH_TS)
-		this->print_unreachable_TS(reached);      // print out all unreachable thread states
+		this->print_unreachable_TS(reached); // print out all unreachable thread states
 }
 
 /**
@@ -78,7 +83,8 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n, const size_p&
  * @param is_spawn:
  * @return local part after updating
  */
-Locals FWS::update_counter(const Locals &Z, const Local_State &dec, const Local_State &inc, const bool &is_spawn) {
+Locals FWS::update_counter(const Locals &Z, const Local_State &dec,
+		const Local_State &inc, const bool &is_spawn) {
 	auto _Z = Z;   /// local copy of Z
 
 	if (!is_spawn) {
@@ -91,7 +97,8 @@ Locals FWS::update_counter(const Locals &Z, const Local_State &dec, const Local_
 			if (idec->second == 0)
 				_Z.erase(idec);
 		} else {
-			throw CONTROL::Error("update_counter: missed local state" + std::to_string(dec));
+			throw CONTROL::Error(
+					"update_counter: missed local state" + std::to_string(dec));
 		}
 	}
 
@@ -99,7 +106,7 @@ Locals FWS::update_counter(const Locals &Z, const Local_State &dec, const Local_
 	if (iinc != _Z.end()) {
 		iinc->second++;
 	} else {
-		_Z[inc] = 1;
+		_Z.emplace(inc, 1);
 	}
 
 	return _Z;
@@ -113,11 +120,13 @@ Locals FWS::update_counter(const Locals &Z, const Local_State &dec, const Local_
  * 			R[s][l] = false: thread state (s, l) is unreachable
  */
 vector<vector<bool>> FWS::extract_reachable_TS(const set<Global_State>& R) {
-	vector<vector<bool>> reached(Thread_State::S, vector<bool>(Thread_State::L, false));
+	vector<vector<bool>> reached(Thread_State::S,
+			vector<bool>(Thread_State::L, false));
 	reached[0][0] = true;
 	for (auto itau = R.begin(); itau != R.end(); ++itau) {
 		const auto &share = itau->share;
-		for (auto iloc = itau->locals.begin(); iloc != itau->locals.end(); ++iloc) {
+		for (auto iloc = itau->locals.begin(); iloc != itau->locals.end();
+				++iloc) {
 			const auto &local = iloc->first;
 			if (!reached[share][local])
 				reached[share][local] = true;
@@ -175,7 +184,8 @@ void FWS::statistic(const vector<vector<bool>>& R) {
 		}
 	}
 	cout << "current # of   reachable Thread States: " << reach << "\n";
-	cout << "current # of unreachable Thread States: " << (Thread_State::S * Thread_State::L - reach) << "\n";
+	cout << "current # of unreachable Thread States: "
+			<< (Thread_State::S * Thread_State::L - reach) << "\n";
 	cout << endl;
 }
 
@@ -199,7 +209,8 @@ Util::~Util() {
  * 			true : src +> dst
  * 			false: otherwise
  */
-bool Util::is_spawn_transition(const Thread_State& src, const Thread_State& dst) {
+bool Util::is_spawn_transition(const Thread_State& src,
+		const Thread_State& dst) {
 	auto ifind = spawntra_TTD.find(src);
 	if (ifind == spawntra_TTD.end()) {
 		return false;
@@ -246,7 +257,8 @@ vector<string> Util::split(const string &s, const char& delim) {
  * @param delim
  * @return
  */
-Thread_State Util::create_thread_state_from_str(const string& s_ts, const char& delim) {
+Thread_State Util::create_thread_state_from_str(const string& s_ts,
+		const char& delim) {
 	auto vts = split(s_ts, delim);
 	if (vts.size() != 2)
 		throw CONTROL::Error("The format of thread state is wrong.");
@@ -260,12 +272,16 @@ Thread_State Util::create_thread_state_from_str(const string& s_ts, const char& 
  * @param adjacency_list
  * @param out
  */
-void Util::print_adj_list(const map<Thread_State, list<Thread_State> >& adj_list, ostream& out) {
+void Util::print_adj_list(const adjacency_list& adj_list, ostream& out) {
 	out << Thread_State::S << " " << Thread_State::L << endl;
-	for (auto pair = adj_list.begin(), end = adj_list.end(); pair != end; ++pair) {
+	for (auto pair = adj_list.begin(), end = adj_list.end(); pair != end;
+			++pair) {
 		__SAFE_ASSERT__ (! pair->second.empty());
-		for (auto isucc = pair->second.begin(), end = pair->second.end(); isucc != end; ++isucc) {
-			out << pair->first << (is_spawn_transition(pair->first, *isucc) ? " +> " : " -> ") << (*isucc) << endl;
+		for (auto isucc = pair->second.begin(), end = pair->second.end();
+				isucc != end; ++isucc) {
+			out << pair->first
+					<< (is_spawn_transition(pair->first, *isucc) ?
+							" +> " : " -> ") << (*isucc) << endl;
 		}
 	}
 }
