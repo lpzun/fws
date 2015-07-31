@@ -5,10 +5,10 @@
  *      Author: peizunliu
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 #include <iomanip>
 #include <fstream>
 #include <sstream>

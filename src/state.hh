@@ -70,10 +70,9 @@ inline Thread_State::Thread_State(const Thread_State& t) :
  * @param share: shared state
  * @param local: local  state
  */
-inline Thread_State::Thread_State(const Shared_State& share, const Local_State& local) {
-	__SAFE_ASSERT__(share < S && local < L);
-	this->share = share;
-	this->local = local;
+inline Thread_State::Thread_State(const Shared_State& share,
+		const Local_State& local) :
+		share(share), local(local) {
 }
 
 /**
@@ -198,7 +197,8 @@ inline Global_State::Global_State(const Thread_State& t, const size_p &n) :
  * @param share : shared state
  * @param locals: local states represented in counter abstraction form
  */
-inline Global_State::Global_State(const Shared_State& share, const Locals& locals) :
+inline Global_State::Global_State(const Shared_State& share,
+		const Locals& locals) :
 		share(share), locals(locals) {
 }
 

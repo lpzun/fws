@@ -23,16 +23,22 @@ int main(const int argc, const char * const * const argv) {
 	try {
 		Input ins;
 		//"X" is the default filename, means there are no input file
-		ins.add_argument("-f", "input file (if given, don't specify s,l,e)", "", "X");
-		ins.add_argument("-n", "number of threads at the initial state", "", "1");
-		ins.add_argument("-s", "maximum times of spawn transitions fired", "", "0");
+		ins.add_argument("-f", "input file (if given, don't specify s,l,e)", "",
+				"X");
+		ins.add_argument("-n", "number of threads at the initial state", "",
+				"1");
+		ins.add_argument("-s", "maximum times of spawn transitions fired", "",
+				"0");
 		ins.add_argument("-i", "the initial thread state", "", "0|0");
 
 		ins.add_switch("--adj-list", "whether to print the adjacency list");
 		ins.add_switch("--cmd-line", "whether to print the command line");
-		ins.add_switch("--reach-ts", "whether to print all reachable thread states");
-		ins.add_switch("--unreach-ts", "whether to print all unreachable thread states");
-		ins.add_switch("--statistic", "whether to print the statistic information");
+		ins.add_switch("--reach-ts",
+				"whether to print all reachable thread states");
+		ins.add_switch("--unreach-ts",
+				"whether to print all unreachable thread states");
+		ins.add_switch("--statistic",
+				"whether to print the statistic information");
 		ins.add_switch("--all", "whether to print all of the above");
 
 		try {
@@ -41,8 +47,8 @@ int main(const int argc, const char * const * const argv) {
 			return 0;
 		}
 
-		OPT_PRT_ALL = ins.arg2bool("--all");
-		if (ins.arg2bool("--cmd-line") || OPT_PRT_ALL) {
+		Refs::OPT_PRT_ALL = ins.arg2bool("--all");
+		if (ins.arg2bool("--cmd-line") || Refs::OPT_PRT_ALL) {
 			ins.print_command_line(0);
 		}
 
@@ -52,9 +58,9 @@ int main(const int argc, const char * const * const argv) {
 		const size_p n = atol(ins.arg_value("-n").c_str());
 		const size_p s = atol(ins.arg_value("-s").c_str());
 
-		OPT_PRT_REACH_TS = ins.arg2bool("--reach-ts");
-		OPT_PRT_STATISTIC = ins.arg2bool("--statistic");
-		OPT_PRT_UNREACH_TS = ins.arg2bool("--unreach-ts");
+		Refs::OPT_PRT_REACH_TS = ins.arg2bool("--reach-ts");
+		Refs::OPT_PRT_STATISTIC = ins.arg2bool("--statistic");
+		Refs::OPT_PRT_UNREACH_TS = ins.arg2bool("--unreach-ts");
 
 		Thread_State init_ts = Util::create_thread_state_from_str(s_inital);
 		adjacency_list original_TTD;
@@ -71,8 +77,9 @@ int main(const int argc, const char * const * const argv) {
 			while (new_in >> s1 >> l1 >> sep >> s2 >> l2) {
 				if (sep == "->" || sep == "+>") {
 					if (sep == "+>")
-						spawntra_TTD[Thread_State(s1, l1)].push_back(Thread_State(s2, l2));
-					original_TTD[Thread_State(s1, l1)].push_back(Thread_State(s2, l2));
+						Refs::spawntra_TTD[Thread_State(s1, l1)].emplace_back(
+								s2, l2);
+					original_TTD[Thread_State(s1, l1)].emplace_back(s2, l2);
 				} else {
 					throw CONTROL::Error("illegal transition");
 				}
@@ -80,7 +87,7 @@ int main(const int argc, const char * const * const argv) {
 			new_in.close();
 		}
 
-		if (ins.arg2bool("--adj-list") || OPT_PRT_ALL) {
+		if (ins.arg2bool("--adj-list") || Refs::OPT_PRT_ALL) {
 			cout << "Adjacency list:" << endl;
 			Util::print_adj_list(original_TTD);
 		}

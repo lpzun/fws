@@ -11,13 +11,21 @@
 #include "state.hh"
 
 namespace sura {
-extern bool OPT_PRT_ALL;
+class Refs {
+public:
+	Refs(){
 
-extern bool OPT_PRT_REACH_TS;
-extern bool OPT_PRT_STATISTIC;
-extern bool OPT_PRT_UNREACH_TS;
+	}
+	~Refs(){
 
-extern adjacency_list spawntra_TTD;
+	}
+
+	static bool OPT_PRT_ALL;
+	static bool OPT_PRT_REACH_TS;
+	static bool OPT_PRT_STATISTIC;
+	static bool OPT_PRT_UNREACH_TS;
+	static adjacency_list spawntra_TTD;
+};
 
 } /* namespace sura */
 

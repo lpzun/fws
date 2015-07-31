@@ -67,11 +67,11 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n,
 	cout << "Under Setting: " << n << " threads at initial state, " << s
 			<< " spawn transitions" << endl;
 	auto reached = this->extract_reachable_TS(R); // extract all reachable thread states
-	if (OPT_PRT_STATISTIC)
+	if (Refs::OPT_PRT_STATISTIC)
 		this->statistic(reached);
-	if (OPT_PRT_REACH_TS)
+	if (Refs::OPT_PRT_REACH_TS)
 		this->print_reachable_TS(reached); // print out all reachable thread states
-	if (OPT_PRT_UNREACH_TS)
+	if (Refs::OPT_PRT_UNREACH_TS)
 		this->print_unreachable_TS(reached); // print out all unreachable thread states
 }
 
@@ -211,8 +211,8 @@ Util::~Util() {
  */
 bool Util::is_spawn_transition(const Thread_State& src,
 		const Thread_State& dst) {
-	auto ifind = spawntra_TTD.find(src);
-	if (ifind == spawntra_TTD.end()) {
+	auto ifind = Refs::spawntra_TTD.find(src);
+	if (ifind == Refs::spawntra_TTD.end()) {
 		return false;
 	} else {
 		auto idst = std::find(ifind->second.begin(), ifind->second.end(), dst);
