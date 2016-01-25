@@ -31,6 +31,8 @@ int main(const int argc, const char * const * const argv) {
 				"0");
 		ins.add_argument("-i", "the initial thread state", "", "0|0");
 
+		ins.add_switch("--tts", "TTS or BP");
+		ins.add_switch("--cutoff", "cutoff detection");
 		ins.add_switch("--adj-list", "whether to print the adjacency list");
 		ins.add_switch("--cmd-line", "whether to print the command line");
 		ins.add_switch("--reach-ts",
@@ -52,12 +54,15 @@ int main(const int argc, const char * const * const argv) {
 			ins.print_command_line(0);
 		}
 
-		const string filename = ins.arg_value("-f");
+		string filename = ins.arg_value("-f");
 		//FILE_NAME_PREFIX = filename.substr(0, filename.find_last_of("."));
 		const string s_inital = ins.arg_value("-i");
 		const size_p n = atol(ins.arg_value("-n").c_str());
 		const size_p s = atol(ins.arg_value("-s").c_str());
 
+		const bool is_cutoff = ins.arg2bool("--cutoff");
+
+		Refs::INPUT_IS_TTS = ins.arg2bool("--tts");
 		Refs::OPT_PRT_REACH_TS = ins.arg2bool("--reach-ts");
 		Refs::OPT_PRT_STATISTIC = ins.arg2bool("--statistic");
 		Refs::OPT_PRT_UNREACH_TS = ins.arg2bool("--unreach-ts");
@@ -67,6 +72,12 @@ int main(const int argc, const char * const * const argv) {
 		if (filename == "X") {
 			throw CONTROL::Error("no input file");
 		} else {
+			if (!Refs::INPUT_IS_TTS) {
+				cout<<"I am here...\n";
+				filename = filename.substr(0, filename.find_last_of("."));
+				filename += ".tts";
+				cout << filename << endl;
+			}
 			ifstream org_in(filename.c_str());
 			CONTROL::remove_comments(org_in, "/tmp/tmp.ttd.no_comment", "#");
 			org_in.close();
@@ -92,8 +103,11 @@ int main(const int argc, const char * const * const argv) {
 			Util::print_adj_list(original_TTD);
 		}
 
-		FWS fws(init_ts);
-		fws.standard_FWS(original_TTD, n, s);
+		FWS fws(init_ts, original_TTD);
+		if (is_cutoff)
+			fws.cutoff_detection();
+		else
+			fws.standard_FWS(n, s);
 		return 0;
 	}
 

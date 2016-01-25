@@ -13,13 +13,38 @@ FWS::FWS() {
 	// TODO Auto-generated constructor stub
 }
 
-FWS::FWS(const Thread_State& init_ts) :
-		init_ts(init_ts) {
+FWS::FWS(const Thread_State& init_ts, const adjacency_list& TTD) :
+		init_ts(init_ts), TTD(TTD) {
 
 }
 
 FWS::~FWS() {
 	// TODO Auto-generated destructor stub
+}
+
+void FWS::cutoff_detection() {
+	size_p cutoff = 1;
+	uint oreach = 0, nreach = 0;
+	while (true) {
+		auto R = this->standard_FWS(cutoff, cutoff);
+		auto mark_R = this->extract_reachable_TS(R);
+		nreach = this->statistic(mark_R);
+		cout << "Under Setting: " << cutoff << " threads at initial state, "
+				<< cutoff << " spawn transitions" << endl;
+		if (Refs::OPT_PRT_REACH_TS)
+			this->print_reachable_TS(mark_R); // print out all reachable thread states
+		if (Refs::OPT_PRT_UNREACH_TS)
+			this->print_unreachable_TS(mark_R); // print out all unreachable thread states
+
+		if (nreach == oreach)
+			break;
+		else
+			oreach = nreach;
+		++cutoff;
+	}
+	if (Refs::INPUT_IS_TTS)
+		this->standard_FWS(cutoff + 1, cutoff - 1);
+	cout << "cutoff is " << (cutoff + cutoff) << endl;
 }
 
 /**
@@ -29,8 +54,7 @@ FWS::~FWS() {
  * @param n  : number of threads at the initial states
  * @param s  : maximum number of spawn transition could be fired
  */
-void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n,
-		const size_p& s) {
+set<Global_State> FWS::standard_FWS(const size_p& n, const size_p& s) {
 	auto spw = s; // local copy of maximum number of spawn transition could be fired
 	queue<Global_State, deque<Global_State>> W; /// worklist
 	W.emplace(init_ts, n); /// start from the initial state with n threads
@@ -63,16 +87,7 @@ void FWS::standard_FWS(const adjacency_list& TTD, const size_p& n,
 			}
 		}
 	}
-
-	cout << "Under Setting: " << n << " threads at initial state, " << s
-			<< " spawn transitions" << endl;
-	auto reached = this->extract_reachable_TS(R); // extract all reachable thread states
-	if (Refs::OPT_PRT_STATISTIC)
-		this->statistic(reached);
-	if (Refs::OPT_PRT_REACH_TS)
-		this->print_reachable_TS(reached); // print out all reachable thread states
-	if (Refs::OPT_PRT_UNREACH_TS)
-		this->print_unreachable_TS(reached); // print out all unreachable thread states
+	return R;
 }
 
 /**
@@ -175,8 +190,8 @@ void FWS::print_unreachable_TS(const vector<vector<bool>>& R) {
  * 			R[s][l] = true : thread state (s, l) is reachable
  * 			R[s][l] = false: thread state (s, l) is unreachable
  */
-void FWS::statistic(const vector<vector<bool>>& R) {
-	unsigned int reach = 0;
+uint FWS::statistic(const vector<vector<bool>>& R) {
+	uint reach = 0;
 	for (auto s = 0; s < Thread_State::S; ++s) {
 		for (auto l = 0; l < Thread_State::L; ++l) {
 			if (R[s][l])
@@ -187,6 +202,7 @@ void FWS::statistic(const vector<vector<bool>>& R) {
 	cout << "current # of unreachable Thread States: "
 			<< (Thread_State::S * Thread_State::L - reach) << "\n";
 	cout << endl;
+	return reach;
 }
 
 /////////////////////// utilities class ////////////////////////////////

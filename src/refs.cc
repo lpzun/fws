@@ -8,6 +8,8 @@
 #include "refs.hh"
 
 namespace sura {
+bool Refs::INPUT_IS_TTS = false;
+
 bool Refs::OPT_PRT_ALL = false;
 
 bool Refs::OPT_PRT_REACH_TS = false;

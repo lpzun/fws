@@ -13,14 +13,15 @@
 namespace sura {
 class Refs {
 public:
-	Refs(){
+	Refs() {
 
 	}
-	~Refs(){
+	~Refs() {
 
 	}
 
 	static bool OPT_PRT_ALL;
+	static bool INPUT_IS_TTS;
 	static bool OPT_PRT_REACH_TS;
 	static bool OPT_PRT_STATISTIC;
 	static bool OPT_PRT_UNREACH_TS;
