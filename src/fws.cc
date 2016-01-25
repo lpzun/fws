@@ -25,7 +25,7 @@ FWS::~FWS() {
 void FWS::cutoff_detection() {
 	size_p cutoff = 1;
 	uint oreach = 0, nreach = 0;
-	while (true) {
+	while (cutoff < 10) { ///TODO we set this as 10, this is no good
 		auto R = this->standard_FWS(cutoff, cutoff);
 		auto mark_R = this->extract_reachable_TS(R);
 		nreach = this->statistic(mark_R);
