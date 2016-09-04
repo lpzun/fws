@@ -25,7 +25,7 @@ FWS::~FWS() {
 void FWS::cutoff_detection() {
 	size_p cutoff = 1;
 	uint oreach = 0, nreach = 0;
-	while (cutoff < 10) { ///TODO we set this as 10, this is no good
+	while (true) { /// we set this as 10, this is no good
 		auto R = this->standard_FWS(cutoff, cutoff);
 		auto mark_R = this->extract_reachable_TS(R);
 		nreach = this->statistic(mark_R);
@@ -55,7 +55,7 @@ void FWS::cutoff_detection() {
  * @param s  : maximum number of spawn transition could be fired
  */
 set<Global_State> FWS::standard_FWS(const size_p& n, const size_p& s) {
-	auto spw = s; // local copy of maximum number of spawn transition could be fired
+	auto spw = s; /// local copy of maximum number of spawn transition could be fired
 	queue<Global_State, deque<Global_State>> W; /// worklist
 	W.emplace(init_ts, n); /// start from the initial state with n threads
 	set<Global_State> R; /// reachable global states
